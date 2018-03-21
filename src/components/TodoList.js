@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { toggleTodo } from '../actions';
 import { getVisibleTodos } from '../reducers'
-import { fetchTodos} from './api';
+import { fetchTodos} from '../api';
 
 fetchTodos('all').then(todos =>
   console.log(todos)
@@ -60,11 +60,13 @@ const TodoList = ({
  </ul>
 )
 
-const mapStateToProps = (state, { match }) => ({
+const mapStateToProps = (state, { match }) => {
   const filter = match.params.filter || 'all';
+  return {
   todos: getVisibleTodos(state, filter ),
   filter,
-});
+  };
+};
 
 // const mapDispatchToProps = (dispatch) => ({
 //   onTodoClick(id) {
@@ -72,7 +74,7 @@ const mapStateToProps = (state, { match }) => ({
 //  }
 // })
 
-const VisibleTodoList = withRouter(connect(
+ VisibleTodoList = withRouter(connect(
  mapStateToProps,
  {onTodoClick: toggleTodo}
 )(VisibleTodoList));
