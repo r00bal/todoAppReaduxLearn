@@ -3,6 +3,31 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { toggleTodo } from '../actions';
 import { getVisibleTodos } from '../reducers'
+import { fetchTodos} from './api';
+
+fetchTodos('all').then(todos =>
+  console.log(todos)
+);
+
+class VisibleTodoList extends React.Component {
+  componentDidMount() {
+    fetchTodos(this.props.filter).then(todos =>
+      console.log(this.props.filter, todos)
+    );
+  }
+
+  componentDidUpdate(prevProps) {
+    if (this.props.filter !== prevProps.filter) {
+    fetchTodos(this.props.filter).then(todos =>
+      console.log(this.props.filter, todos)
+    );
+  }
+  }
+  render() {
+    return <TodoList {...this.props} />;
+  }
+}
+
 
 const Todo = ({
  onClick,
@@ -24,7 +49,7 @@ const TodoList = ({
 }) => (
 
  <ul>
-   
+
    {todos.map(todo =>
      <Todo
        key={todo.id}
@@ -36,7 +61,9 @@ const TodoList = ({
 )
 
 const mapStateToProps = (state, { match }) => ({
-  todos: getVisibleTodos(state, match.params.filter || 'all'),
+  const filter = match.params.filter || 'all';
+  todos: getVisibleTodos(state, filter ),
+  filter,
 });
 
 // const mapDispatchToProps = (dispatch) => ({
@@ -48,6 +75,6 @@ const mapStateToProps = (state, { match }) => ({
 const VisibleTodoList = withRouter(connect(
  mapStateToProps,
  {onTodoClick: toggleTodo}
-)(TodoList));
+)(VisibleTodoList));
 
 export default VisibleTodoList;
