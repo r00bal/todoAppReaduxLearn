@@ -20,7 +20,7 @@ class VisibleTodoList extends React.Component {
   fetchData() {
     const { filter, fetchTodos } = this.props;
       fetchTodos(filter)
-    );
+    
   }
   render() {
     const { toggleTodo, ...rest} = this.props;

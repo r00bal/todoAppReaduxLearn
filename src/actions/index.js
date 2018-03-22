@@ -1,5 +1,5 @@
 import { v4 } from 'node-uuid';
-import * api from '../api';
+import  * as api from '../api';
 
 const receiveTodos = (filter, response) => ({
   type: 'RECEIVE_TODOS',
