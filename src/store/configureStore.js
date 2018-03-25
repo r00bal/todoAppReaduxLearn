@@ -1,8 +1,8 @@
 import { createStore } from 'redux';
 import rootReducer from '../reducers';
 
-const addLoggingToDispatch = (store) => {
-  const next = store.dispatch;
+const logger = (store) => (next) => {
+
   if (!console.group) {
   return next
 }
@@ -18,25 +18,27 @@ const addLoggingToDispatch = (store) => {
   }
 }
 
-const addPromiseSupportToDispatch = (store) => {
-  const next = store.dispatch;
-  return (action) => {
+const promise = (store) => (next) => (action) => {
     if (typeof action.then === 'function') {
       return action.then(next);
     }
-
     return next(action);
-  }
-};
+  };
+
+const wrapDispatchWithMiddlewares = (store, middlewares) =>
+  middlewares.slice().reverse().forEach(middlewares =>{
+    store.dispatch = middlewares(store)(store.dispatch);
+  });
 
 const configureStore = () => {
   const store = createStore(rootReducer);
+  const middlewares = [promise];
 
   if (process.env.NODE_ENV !== 'production') {
-     store.dispatch = addLoggingToDispatch(store);
+     middlewares.push(logger);
    }
 
-  store.dispatch = addPromiseSupportToDispatch(store);
+  wrapDispatchWithMiddlewares(store, middlewares);
 
   console.log(store.dispatch);
   return store;
